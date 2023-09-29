@@ -1,8 +1,8 @@
 import * as Tone from "tone";
 
-import { BeaterName } from "./types/beater-name";
-import { BrickName } from "./types/brick-name";
-import { eventListener } from "./events/event-listener";
+import { BeaterName } from "../types/beater-name";
+import { BrickName } from "../types/brick-name";
+import { eventListener } from "../events/event-listener";
 
 export enum OneShotNames {
   KICK = "kick",

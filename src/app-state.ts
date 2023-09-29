@@ -2,8 +2,8 @@ import * as Tone from "tone";
 import Phaser from "phaser";
 import { action, makeAutoObservable, observable } from "mobx";
 
-import { AudioLoader } from "./audio-loader";
-import { AudioManager } from "./audio-manager";
+import { AudioLoader } from "./audio/audio-loader";
+import { AudioManager } from "./audio/audio-manager";
 import { BootScene } from "./scenes/boot-scene";
 import { GameScene } from "./scenes/game-scene";
 import { eventListener } from "./events/event-listener";

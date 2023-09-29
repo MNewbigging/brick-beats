@@ -4,10 +4,10 @@ import { AudioLoader, OneShotNames } from "./audio-loader";
 import {
   BeaterBeaterCollision,
   BeaterBrickCollision,
-} from "./events/event-map";
-import { BeaterName } from "./types/beater-name";
-import { BrickName } from "./types/brick-name";
-import { eventListener } from "./events/event-listener";
+} from "../events/event-map";
+import { BeaterName } from "../types/beater-name";
+import { BrickName } from "../types/brick-name";
+import { eventListener } from "../events/event-listener";
 
 // If it exists in the map, it has been scheduled to start
 interface AudioItem {

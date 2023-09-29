@@ -21,4 +21,8 @@ export interface EventMap {
   "game-start": null;
   "beater-brick-collision": BeaterBrickCollision;
   "beater-beater-collision": BeaterBeaterCollision;
+  "audio-scheduled-on": { beaterName: BeaterName; brickName: BrickName };
+  "audio-started": { beaterName: BeaterName; brickName: BrickName };
+  "audio-scheduled-off": { beaterName: BeaterName; brickName: BrickName };
+  "audio-stopped": { beaterName: BeaterName; brickName: BrickName };
 }
