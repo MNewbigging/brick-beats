@@ -20,13 +20,13 @@ export enum BrickName {
   COPPER = "brick-copper",
   IRON = "brick-iron",
   STONE = "brick-stone",
-  DIAMON = "brick-diamond",
+  DIAMOND = "brick-diamond",
   GLASS = "brick-glass",
 }
 
 export const brickNames: BrickName[] = [
   BrickName.BLUE_DARK,
-  BrickName.GREEN_DARK,
-  BrickName.RED_DARK,
-  BrickName.ORANGE_DARK,
+  //BrickName.GREEN_DARK,
+  // BrickName.RED_DARK,
+  // BrickName.ORANGE_DARK,
 ];

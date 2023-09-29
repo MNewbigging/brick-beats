@@ -7,4 +7,4 @@ export enum BeaterName {
   YELLOW = "yellow",
 }
 
-export const beaterNames: BeaterName[] = [BeaterName.RED, BeaterName.BLUE];
+export const beaterNames: BeaterName[] = [BeaterName.RED];

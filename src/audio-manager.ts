@@ -9,13 +9,19 @@ import { BeaterName } from "./types/beater-name";
 import { BrickName } from "./types/brick-name";
 import { eventListener } from "./events/event-listener";
 
+interface AudioPlayer {
+  scheduleId: number;
+  player: Tone.Player;
+  toBeRemoved: boolean;
+}
+
 /**
  * All audio to be controlled by this class.
  * Appropriate audio lib needs installing first, then play in response to game events.
  */
 export class AudioManager {
   // Stores joinedName and id of scheduled callback for audio currently playing
-  private playingMap = new Map<string, number>();
+  private playingMap = new Map<string, AudioPlayer>();
 
   constructor(private audioLoader: AudioLoader) {
     eventListener.on("game-start", this.onGameStart);
@@ -25,7 +31,7 @@ export class AudioManager {
 
   private onGameStart = () => {
     // Set the starting tempo
-    Tone.Transport.bpm.value = 120;
+    Tone.Transport.bpm.value = 125;
 
     // Start the scheduler
     Tone.Transport.start();
@@ -35,47 +41,56 @@ export class AudioManager {
     // Each beater+brick name results in a single layer
     const joinedName = event.beaterName.concat(event.brickName);
 
-    // If this is already playing
-    const callbackId = this.playingMap.get(joinedName);
-    if (callbackId !== undefined) {
-      // If the id is -1, it is scheduled for removal
-      if (callbackId < 0) {
-        return;
-      }
+    // Get id of audio already playing for this name
+    const audioPlayer = this.playingMap.get(joinedName);
 
-      // Change the id so we know not to enter this between now and when it's cleared
-      this.playingMap.set(joinedName, -1);
-
-      // Stop it from playing when the next measure starts
-      Tone.Transport.scheduleOnce((time) => {
-        Tone.Transport.clear(callbackId);
-        // Remove from map
-        this.playingMap.delete(joinedName);
-      }, "@1m");
-
-      return;
+    if (audioPlayer) {
+      this.stopAudio(joinedName, audioPlayer);
+    } else {
+      this.startAudio(joinedName);
     }
+  };
 
-    const player = this.audioLoader.getPlayer(joinedName);
+  private startAudio(name: string) {
+    // First get the audio player for this name
+    const player = this.audioLoader.getPlayer(name);
     if (!player) {
-      console.log("could not find player for", joinedName);
       return;
     }
 
-    // Play the sound
-    const id = Tone.Transport.scheduleRepeat(
-      (time) => {
-        player.start(time);
+    // Loop it every 4 measures (8 beats), start at next measure
+    const scheduleId = Tone.Transport.scheduleRepeat(
+      () => {
+        player.start();
       },
-      "1m",
+      "4m",
       "@1m"
     );
 
-    // Add to map
-    this.playingMap.set(joinedName, id);
-  };
+    // Add it to the map to be stopped later
+    this.playingMap.set(name, { player, scheduleId });
+  }
+
+  private stopAudio(name: string, audioPlayer: AudioPlayer) {
+    // If already scheduled for removal, can stop
+    if (audioPlayer.toBeRemoved) {
+      return;
+    }
+
+    // Schedule for removal
+    audioPlayer.toBeRemoved = true;
+
+    Tone.Transport.scheduleOnce(() => {
+      // Remove the scheduled repeat
+      Tone.Transport.clear(audioPlayer.scheduleId);
+      // Stop it playing on next measure
+      audioPlayer.player.stop("@1m");
+      // Remove from map
+      this.playingMap.delete(name);
+    }, "@1m");
+  }
 
   private onBeaterBeaterCollision = (event: BeaterBeaterCollision) => {
-    // Play SFX
+    // Play random one shot
   };
 }
