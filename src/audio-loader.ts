@@ -4,11 +4,18 @@ import { BeaterName } from "./types/beater-name";
 import { BrickName } from "./types/brick-name";
 import { eventListener } from "./events/event-listener";
 
+export enum OneShotNames {
+  KICK = "kick",
+  CLAP = "clap",
+}
+
 export class AudioLoader {
   loaded = false;
   playerMap = new Map<string, Tone.Player>();
 
   private audioFileMap = new Map<string, string>([
+    [OneShotNames.KICK, "/audio/one-shots/FL_FUR_Kit1_Kick_One_Shot.wav"],
+    [OneShotNames.CLAP, "/audio/one-shots/FL_FUR_Kit1_Clap_One_Shot.wav"],
     [
       BeaterName.RED + BrickName.BLUE_DARK,
       "/audio/drum-loops/SH_TCH_125_Drum_Loop_Clap_04.wav",

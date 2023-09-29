@@ -1,6 +1,6 @@
 import * as Tone from "tone";
 
-import { AudioLoader } from "./audio-loader";
+import { AudioLoader, OneShotNames } from "./audio-loader";
 import {
   BeaterBeaterCollision,
   BeaterBrickCollision,
@@ -8,31 +8,6 @@ import {
 import { BeaterName } from "./types/beater-name";
 import { BrickName } from "./types/brick-name";
 import { eventListener } from "./events/event-listener";
-
-/**
- * Event flow:
- * (nothing playing at start)
- * - Beater hits brick, audio is scheduled to start
- * - Audio starts
- * - Beater hits brick again, audio is scheduled to stop
- * - Audio stops
- *
- * What if:
- * - A second beater hits the same brick before audio starts? It will stop before starting.
- * - A second beater hits before audio stops? It'll never stop
- *
- * Need:
- * - cooldown on starting and stopping
- * - cannot stop a sound that has yet to start
- * - cannot start a sound that has yet to stop
- * - + cooldown? don't want to result in too many 'dud hits'
- *
- * I need to know:
- * - when a player is scheduled to start
- * - when it actually starts playing
- * - when it is scheduled to stop
- * - when it actually stops playing
- */
 
 // If it exists in the map, it has been scheduled to start
 interface AudioItem {
@@ -45,11 +20,12 @@ interface AudioItem {
 export class AudioManager {
   // Stores joinedName and above audio player object
   private audioItemMap = new Map<string, AudioItem>();
+  private oneShotSet = new Set<OneShotNames>();
 
   constructor(private audioLoader: AudioLoader) {
     eventListener.on("game-start", this.onGameStart);
     eventListener.on("beater-brick-collision", this.onBeaterBrickCollision);
-    eventListener.on("beater-beater-collision", this.onBeaterBeaterCollision);
+    //eventListener.on("beater-beater-collision", this.onBeaterBeaterCollision);
   }
 
   private onGameStart = () => {
@@ -86,17 +62,12 @@ export class AudioManager {
       return;
     }
 
-    // This player has been scheduled to start now
-    console.log(`Scheduled to start`, name);
-
     Tone.Transport.scheduleOnce(() => {
       // This player has now started
       const item = this.audioItemMap.get(name);
       if (item) {
         item.started = true;
       }
-
-      console.log("Actually started", name);
     }, "@1m");
 
     // Repeat player every 4 measures (8 beats), beginning start of next measure
@@ -125,18 +96,50 @@ export class AudioManager {
     // Prevent looping further
     Tone.Transport.clear(audioItem.scheduleId);
 
-    console.log("Scheduled to stop", name);
-
     // When it stops
     audioItem.player.onstop = () => {
       // Remove from map so it can start again
       this.audioItemMap.delete(name);
-
-      console.log("Actually stopped", name);
     };
   }
 
   private onBeaterBeaterCollision = (event: BeaterBeaterCollision) => {
+    // Get a random one shot that isn't currently playing
+    const names = Object.values(OneShotNames).filter(
+      (name) => !this.oneShotSet.has(name)
+    );
+    if (!names.length) {
+      return;
+    }
+
+    const rnd = Math.floor(Math.random() * names.length);
+    const oneShotName = names[rnd];
+
     // Play random one shot
+    const player = this.audioLoader.getPlayer(oneShotName);
+    if (!player) {
+      return;
+    }
+
+    // Add to set so we don't play dupes
+    this.oneShotSet.add(oneShotName);
+
+    // On stop, remove from set to allow it to play again
+    player.onstop = () => {
+      this.oneShotSet.delete(oneShotName);
+    };
+
+    /**
+     * When to play one-shots:
+     * - start of next measure
+     * - immediately
+     * - both sound crap
+     *
+     * Give player control of one-shots?
+     * They just unlock them when beaters collide or when certain bricks are hit?
+     */
+    Tone.Transport.scheduleOnce(() => {
+      player.start();
+    }, "@1m");
   };
 }
