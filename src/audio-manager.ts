@@ -9,19 +9,42 @@ import { BeaterName } from "./types/beater-name";
 import { BrickName } from "./types/brick-name";
 import { eventListener } from "./events/event-listener";
 
-interface AudioPlayer {
-  scheduleId: number;
-  player: Tone.Player;
-  toBeRemoved: boolean;
+/**
+ * Event flow:
+ * (nothing playing at start)
+ * - Beater hits brick, audio is scheduled to start
+ * - Audio starts
+ * - Beater hits brick again, audio is scheduled to stop
+ * - Audio stops
+ *
+ * What if:
+ * - A second beater hits the same brick before audio starts? It will stop before starting.
+ * - A second beater hits before audio stops? It'll never stop
+ *
+ * Need:
+ * - cooldown on starting and stopping
+ * - cannot stop a sound that has yet to start
+ * - cannot start a sound that has yet to stop
+ * - + cooldown? don't want to result in too many 'dud hits'
+ *
+ * I need to know:
+ * - when a player is scheduled to start
+ * - when it actually starts playing
+ * - when it is scheduled to stop
+ * - when it actually stops playing
+ */
+
+// If it exists in the map, it has been scheduled to start
+interface AudioItem {
+  started: boolean; // cannot be stopped if it hasn't started
+  toBeRemoved: boolean; // removal has been scheduled or not
+  scheduleId: number; // id for the scheduled repeat
+  player: Tone.Player; // reference to audio-loader's player map
 }
 
-/**
- * All audio to be controlled by this class.
- * Appropriate audio lib needs installing first, then play in response to game events.
- */
 export class AudioManager {
-  // Stores joinedName and id of scheduled callback for audio currently playing
-  private playingMap = new Map<string, AudioPlayer>();
+  // Stores joinedName and above audio player object
+  private audioItemMap = new Map<string, AudioItem>();
 
   constructor(private audioLoader: AudioLoader) {
     eventListener.on("game-start", this.onGameStart);
@@ -38,16 +61,21 @@ export class AudioManager {
   };
 
   private onBeaterBrickCollision = (event: BeaterBrickCollision) => {
-    // Each beater+brick name results in a single layer
+    // Each beater+brick name results in a single player
     const joinedName = event.beaterName.concat(event.brickName);
 
-    // Get id of audio already playing for this name
-    const audioPlayer = this.playingMap.get(joinedName);
+    // Get any existing audio item for this name
+    const item = this.audioItemMap.get(joinedName);
 
-    if (audioPlayer) {
-      this.stopAudio(joinedName, audioPlayer);
-    } else {
+    // If there is no such item, can start the audio
+    if (!item) {
       this.startAudio(joinedName);
+      return;
+    }
+
+    // If the item has already started and NOT been scheduled for removal, can stop it
+    if (item.started && !item.toBeRemoved) {
+      this.stopAudio(joinedName, item);
     }
   };
 
@@ -58,9 +86,23 @@ export class AudioManager {
       return;
     }
 
-    // Loop it every 4 measures (8 beats), start at next measure
+    // This player has been scheduled to start now
+    console.log(`Scheduled to start`, name);
+
+    Tone.Transport.scheduleOnce(() => {
+      // This player has now started
+      const item = this.audioItemMap.get(name);
+      if (item) {
+        item.started = true;
+      }
+
+      console.log("Actually started", name);
+    }, "@1m");
+
+    // Repeat player every 4 measures (8 beats), beginning start of next measure
     const scheduleId = Tone.Transport.scheduleRepeat(
       () => {
+        // Start playing the audio
         player.start();
       },
       "4m",
@@ -68,26 +110,30 @@ export class AudioManager {
     );
 
     // Add it to the map to be stopped later
-    this.playingMap.set(name, { player, scheduleId });
+    this.audioItemMap.set(name, {
+      started: false,
+      toBeRemoved: false,
+      scheduleId,
+      player,
+    });
   }
 
-  private stopAudio(name: string, audioPlayer: AudioPlayer) {
-    // If already scheduled for removal, can stop
-    if (audioPlayer.toBeRemoved) {
-      return;
-    }
-
+  private stopAudio(name: string, audioItem: AudioItem) {
     // Schedule for removal
-    audioPlayer.toBeRemoved = true;
+    audioItem.toBeRemoved = true;
 
-    Tone.Transport.scheduleOnce(() => {
-      // Remove the scheduled repeat
-      Tone.Transport.clear(audioPlayer.scheduleId);
-      // Stop it playing on next measure
-      audioPlayer.player.stop("@1m");
-      // Remove from map
-      this.playingMap.delete(name);
-    }, "@1m");
+    // Prevent looping further
+    Tone.Transport.clear(audioItem.scheduleId);
+
+    console.log("Scheduled to stop", name);
+
+    // When it stops
+    audioItem.player.onstop = () => {
+      // Remove from map so it can start again
+      this.audioItemMap.delete(name);
+
+      console.log("Actually stopped", name);
+    };
   }
 
   private onBeaterBeaterCollision = (event: BeaterBeaterCollision) => {
