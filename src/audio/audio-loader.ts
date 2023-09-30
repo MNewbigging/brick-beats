@@ -14,6 +14,26 @@ export class AudioLoader {
       TrackName.CLAP_03,
       "/audio/drum-loops/claps/SH_TCH_125_Drum_Loop_Clap_03.wav",
     ],
+    [
+      TrackName.CLAP_04,
+      "/audio/drum-loops/claps/SH_TCH_125_Drum_Loop_Clap_04.wav",
+    ],
+    [
+      TrackName.CLAP_05,
+      "/audio/drum-loops/claps/SH_TCH_125_Drum_Loop_Clap_05.wav",
+    ],
+    [
+      TrackName.CLAP_06,
+      "/audio/drum-loops/claps/SH_TCH_125_Drum_Loop_Clap_06.wav",
+    ],
+    [
+      TrackName.CLAP_07,
+      "/audio/drum-loops/claps/SH_TCH_125_Drum_Loop_Clap_07.wav",
+    ],
+    [
+      TrackName.KICK_01,
+      "/audio/drum-loops/kick/SH_TCH_125_Drum_Loop_Kick_01.wav",
+    ],
   ]);
 
   getPlayer(name: string) {

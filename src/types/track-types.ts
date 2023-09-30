@@ -3,6 +3,11 @@ import { BrickName } from "./brick-name";
 
 export enum TrackName {
   CLAP_03 = "clap-03",
+  CLAP_04 = "clap-04",
+  CLAP_05 = "clap-05",
+  CLAP_06 = "clap-06",
+  CLAP_07 = "clap-07",
+  KICK_01 = "kick-01",
 }
 
 export enum TrackType {
@@ -29,6 +34,8 @@ export function getBrickTrackType(brickName: BrickName) {
   switch (brickName) {
     case BrickName.BLUE:
       return TrackType.CLAP;
+    case BrickName.BLUE_DARK:
+      return TrackType.KICK;
     default:
       return TrackType.CLAP;
   }
@@ -37,7 +44,15 @@ export function getBrickTrackType(brickName: BrickName) {
 export function getTracksForType(trackType: TrackType) {
   switch (trackType) {
     case TrackType.CLAP:
-      return [TrackName.CLAP_03];
+      return [
+        TrackName.CLAP_03,
+        TrackName.CLAP_04,
+        TrackName.CLAP_05,
+        TrackName.CLAP_06,
+        TrackName.CLAP_07,
+      ];
+    case TrackType.KICK:
+      return [TrackName.KICK_01];
     default:
       return [TrackName.CLAP_03];
   }
