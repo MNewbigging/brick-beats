@@ -3,51 +3,17 @@ import * as Tone from "tone";
 import { BeaterName } from "../types/beater-name";
 import { BrickName } from "../types/brick-name";
 import { eventListener } from "../events/event-listener";
-
-export enum OneShotNames {
-  KICK = "kick",
-  CLAP = "clap",
-}
+import { TrackName } from "../types/track-types";
 
 export class AudioLoader {
   loaded = false;
   playerMap = new Map<string, Tone.Player>();
 
   private audioFileMap = new Map<string, string>([
-    [OneShotNames.KICK, "/audio/one-shots/FL_FUR_Kit1_Kick_One_Shot.wav"],
-    [OneShotNames.CLAP, "/audio/one-shots/FL_FUR_Kit1_Clap_One_Shot.wav"],
     [
-      BeaterName.RED + BrickName.BLUE_DARK,
-      "/audio/drum-loops/SH_TCH_125_Drum_Loop_Clap_04.wav",
+      TrackName.CLAP_03,
+      "/audio/drum-loops/claps/SH_TCH_125_Drum_Loop_Clap_03.wav",
     ],
-    [
-      BeaterName.RED + BrickName.GREEN_DARK,
-      "/audio/drum-loops/SH_TCH_125_Drum_Loop_Hats_01.wav",
-    ],
-    // [
-    //   BeaterName.RED + BrickName.RED_DARK,
-    //   "/audio/Drum_Loops/Drum_Loop_3_120bpm.wav",
-    // ],
-    // [
-    //   BeaterName.RED + BrickName.ORANGE_DARK,
-    //   "/audio/Drum_Loops/Drum_Loop_4_120bpm.wav",
-    // ],
-    // [
-    //   BeaterName.BLUE + BrickName.BLUE_DARK,
-    //   "/audio/Synth_Loops/Synth_Loop_1_120bpm.wav",
-    // ],
-    // [
-    //   BeaterName.BLUE + BrickName.GREEN_DARK,
-    //   "/audio/Synth_Loops/Synth_Loop_2_120bpm.wav",
-    // ],
-    // [
-    //   BeaterName.BLUE + BrickName.RED_DARK,
-    //   "/audio/Synth_Loops/Synth_Loop_3_120bpm.wav",
-    // ],
-    // [
-    //   BeaterName.BLUE + BrickName.ORANGE_DARK,
-    //   "/audio/Synth_Loops/Synth_Loop_4_120bpm.wav",
-    // ],
   ]);
 
   getPlayer(name: string) {

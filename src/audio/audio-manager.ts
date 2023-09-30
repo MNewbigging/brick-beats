@@ -1,6 +1,6 @@
 import * as Tone from "tone";
 
-import { AudioLoader, OneShotNames } from "./audio-loader";
+import { AudioLoader } from "./audio-loader";
 import {
   BeaterBeaterCollision,
   BeaterBrickCollision,
@@ -8,19 +8,17 @@ import {
 import { BeaterName } from "../types/beater-name";
 import { BrickName } from "../types/brick-name";
 import { eventListener } from "../events/event-listener";
-
-// If it exists in the map, it has been scheduled to start
-interface AudioItem {
-  started: boolean; // cannot be stopped if it hasn't started
-  toBeRemoved: boolean; // removal has been scheduled or not
-  scheduleId: number; // id for the scheduled repeat
-  player: Tone.Player; // reference to audio-loader's player map
-}
+import {
+  Track,
+  TrackName,
+  TrackType,
+  getBrickTrackType,
+  getRandomTrack,
+} from "../types/track-types";
 
 export class AudioManager {
-  // Stores joinedName and above audio player object
-  private audioItemMap = new Map<string, AudioItem>();
-  private oneShotSet = new Set<OneShotNames>();
+  // Brick name and corresponding active track
+  private currentTracks = new Map<string, Track>();
 
   constructor(private audioLoader: AudioLoader) {
     eventListener.on("game-start", this.onGameStart);
@@ -37,36 +35,52 @@ export class AudioManager {
   };
 
   private onBeaterBrickCollision = (event: BeaterBrickCollision) => {
-    // Each beater+brick name results in a single player
-    const joinedName = event.beaterName.concat(event.brickName);
+    // Get any existing track for this brick
+    const track = this.currentTracks.get(event.brickName);
 
-    // Get any existing audio item for this name
-    const item = this.audioItemMap.get(joinedName);
+    // todo - allow for multiple tracks per brick
 
-    // If there is no such item, can start the audio
-    if (!item) {
-      this.startAudio(joinedName);
+    // If there is no such item, can add a new track for this brick
+    if (!track) {
+      this.addTrack(event.brickName);
+
       return;
     }
 
     // If the item has already started and NOT been scheduled for removal, can stop it
-    if (item.started && !item.toBeRemoved) {
-      this.stopAudio(joinedName, item);
+    if (track.started && !track.toBeRemoved) {
+      this.removeTrack(event.brickName, track);
     }
   };
 
-  private startAudio(name: string) {
-    // First get the audio player for this name
-    const player = this.audioLoader.getPlayer(name);
+  private addTrack(brickName: BrickName) {
+    // Get the track type for this brick
+    const trackType = getBrickTrackType(brickName);
+
+    // Then get a track name for this track type
+    const trackName = getRandomTrack(trackType);
+
+    // Then get the associated player for it
+    const player = this.audioLoader.getPlayer(trackName);
     if (!player) {
       return;
     }
 
+    // Start it
+    this.startAudio(brickName, trackType, player);
+  }
+
+  private startAudio(
+    brickName: BrickName,
+    trackType: TrackType,
+    player: Tone.Player
+  ) {
+    // When it starts, do this once
     Tone.Transport.scheduleOnce(() => {
       // This player has now started
-      const item = this.audioItemMap.get(name);
-      if (item) {
-        item.started = true;
+      const track = this.currentTracks.get(brickName);
+      if (track) {
+        track.started = true;
       }
     }, "@1m");
 
@@ -81,7 +95,8 @@ export class AudioManager {
     );
 
     // Add it to the map to be stopped later
-    this.audioItemMap.set(name, {
+    this.currentTracks.set(brickName, {
+      type: trackType,
       started: false,
       toBeRemoved: false,
       scheduleId,
@@ -89,57 +104,20 @@ export class AudioManager {
     });
   }
 
-  private stopAudio(name: string, audioItem: AudioItem) {
+  private removeTrack(brickName: BrickName, track: Track) {
     // Schedule for removal
-    audioItem.toBeRemoved = true;
+    track.toBeRemoved = true;
 
-    // Prevent looping further
-    Tone.Transport.clear(audioItem.scheduleId);
+    // Prevent further looping
+    Tone.Transport.clear(track.scheduleId);
 
     // When it stops
-    audioItem.player.onstop = () => {
-      // Remove from map so it can start again
-      this.audioItemMap.delete(name);
+    track.player.onstop = () => {
+      // Remove track from map
+      this.currentTracks.delete(brickName);
     };
   }
 
-  private onBeaterBeaterCollision = (event: BeaterBeaterCollision) => {
-    // Get a random one shot that isn't currently playing
-    const names = Object.values(OneShotNames).filter(
-      (name) => !this.oneShotSet.has(name)
-    );
-    if (!names.length) {
-      return;
-    }
-
-    const rnd = Math.floor(Math.random() * names.length);
-    const oneShotName = names[rnd];
-
-    // Play random one shot
-    const player = this.audioLoader.getPlayer(oneShotName);
-    if (!player) {
-      return;
-    }
-
-    // Add to set so we don't play dupes
-    this.oneShotSet.add(oneShotName);
-
-    // On stop, remove from set to allow it to play again
-    player.onstop = () => {
-      this.oneShotSet.delete(oneShotName);
-    };
-
-    /**
-     * When to play one-shots:
-     * - start of next measure
-     * - immediately
-     * - both sound crap
-     *
-     * Give player control of one-shots?
-     * They just unlock them when beaters collide or when certain bricks are hit?
-     */
-    Tone.Transport.scheduleOnce(() => {
-      player.start();
-    }, "@1m");
-  };
+  // private onBeaterBeaterCollision = (event: BeaterBeaterCollision) => {
+  // };
 }

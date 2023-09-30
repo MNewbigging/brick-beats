@@ -25,8 +25,8 @@ export enum BrickName {
 }
 
 export const brickNames: BrickName[] = [
-  BrickName.BLUE_DARK,
-  BrickName.GREEN_DARK,
+  BrickName.BLUE,
+  //BrickName.GREEN_DARK,
   // BrickName.RED_DARK,
   // BrickName.ORANGE_DARK,
 ];
