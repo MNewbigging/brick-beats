@@ -17,7 +17,7 @@ export class GameScene extends Phaser.Scene {
   create() {
     // Create group for shapes, set it to collide with all beaters
     this.shapes = this.physics.add.staticGroup();
-    this.physics.add.collider(this.beaters, this.shapes, this.beaterHitBrick);
+    //this.physics.add.collider(this.beaters, this.shapes, this.beaterHitBrick);
 
     this.input.mouse?.disableContextMenu();
 
@@ -52,6 +52,9 @@ export class GameScene extends Phaser.Scene {
     // Beaters collide with each other
     this.physics.add.collider(beater, this.beaters); // add this.beaterHitBeater as 3rd param if needed later
 
+    // Beaters collide with bricks
+    this.physics.add.collider(beater, this.shapes, this.beaterHitBrick);
+
     beater.setData("name", beaterNames[randomBallFrame]);
 
     this.beaters.push(beater);
@@ -79,6 +82,7 @@ export class GameScene extends Phaser.Scene {
       return;
     }
 
+    // Get details for the event
     const beaterName = beater.getData("name") as BeaterName;
     const brickName = shape.getData("name") as BrickName;
     const speed = beater.body.velocity.length();
@@ -87,12 +91,18 @@ export class GameScene extends Phaser.Scene {
       beater.body.position.y
     );
 
+    // Fire the event
     eventListener.fire("beater-brick-collision", {
       beaterName,
       brickName,
       speed,
       position,
     });
+
+    // Remove the brick and beater
+    this.shapes.remove(shape, true, true);
+    beater.destroy();
+    this.beaters = this.beaters.filter((b) => b !== beater);
   };
 
   private readonly beaterHitBeater = (
