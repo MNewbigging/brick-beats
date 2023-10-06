@@ -34,6 +34,110 @@ export class AudioLoader {
       TrackName.KICK_01,
       "/audio/drum-loops/kick/SH_TCH_125_Drum_Loop_Kick_01.wav",
     ],
+    [
+      TrackName.KICK_02,
+      "/audio/drum-loops/kick/SH_TCH_125_Drum_Loop_Kick_02.wav",
+    ],
+    [
+      TrackName.KICK_03,
+      "/audio/drum-loops/kick/SH_TCH_125_Drum_Loop_Kick_03.wav",
+    ],
+    [
+      TrackName.KICK_04,
+      "/audio/drum-loops/kick/SH_TCH_125_Drum_Loop_Kick_04.wav",
+    ],
+    [
+      TrackName.KICK_05,
+      "/audio/drum-loops/kick/SH_TCH_125_Drum_Loop_Kick_05.wav",
+    ],
+    [
+      TrackName.KICK_06,
+      "/audio/drum-loops/kick/SH_TCH_125_Drum_Loop_Kick_06.wav",
+    ],
+    [
+      TrackName.KICK_07,
+      "/audio/drum-loops/kick/SH_TCH_125_Drum_Loop_Kick_07.wav",
+    ],
+    [
+      TrackName.HATS_01,
+      "/audio/drum-loops/hats/SH_TCH_125_Drum_Loop_Hats_01.wav",
+    ],
+    [
+      TrackName.HATS_02,
+      "/audio/drum-loops/hats/SH_TCH_125_Drum_Loop_Hats_02.wav",
+    ],
+    [
+      TrackName.HATS_03,
+      "/audio/drum-loops/hats/SH_TCH_125_Drum_Loop_Hats_03.wav",
+    ],
+    [
+      TrackName.HATS_04,
+      "/audio/drum-loops/hats/SH_TCH_125_Drum_Loop_Hats_04.wav",
+    ],
+    [
+      TrackName.HATS_05,
+      "/audio/drum-loops/hats/SH_TCH_125_Drum_Loop_Hats_05.wav",
+    ],
+    [
+      TrackName.HATS_06,
+      "/audio/drum-loops/hats/SH_TCH_125_Drum_Loop_Hats_06.wav",
+    ],
+    [
+      TrackName.HATS_07,
+      "/audio/drum-loops/hats/SH_TCH_125_Drum_Loop_Hats_07.wav",
+    ],
+    [
+      TrackName.PERC_FX_02,
+      "/audio/drum-loops/perc-fx/SH_TCH_125_Perc_Loop_02.wav",
+    ],
+    [
+      TrackName.PERC_FX_03,
+      "/audio/drum-loops/perc-fx/SH_TCH_125_Perc_Loop_03.wav",
+    ],
+    [
+      TrackName.PERC_FX_04,
+      "/audio/drum-loops/perc-fx/SH_TCH_125_Perc_Loop_04.wav",
+    ],
+    [
+      TrackName.PERC_FX_05,
+      "/audio/drum-loops/perc-fx/SH_TCH_125_Perc_Loop_05.wav",
+    ],
+    [
+      TrackName.PERC_FX_06,
+      "/audio/drum-loops/perc-fx/SH_TCH_125_Perc_Loop_06.wav",
+    ],
+    [
+      TrackName.PERC_FX_07,
+      "/audio/drum-loops/perc-fx/SH_TCH_125_Perc_Loop_07.wav",
+    ],
+    [
+      TrackName.PERC_FX_08,
+      "/audio/drum-loops/perc-fx/SH_TCH_125_Perc_Loop_08.wav",
+    ],
+    [
+      TrackName.PERC_FX_09,
+      "/audio/drum-loops/perc-fx/SH_TCH_125_Perc_Loop_09.wav",
+    ],
+    [
+      TrackName.BASS_A_SHARP,
+      "/audio/bass-loops/SH_TCH_125_Bass_Loop_A_SHARP.wav",
+    ],
+    [TrackName.BASS_E, "/audio/bass-loops/SH_TCH_125_Bass_Loop_E.wav"],
+    [TrackName.BASS_F_01, "/audio/bass-loops/SH_TCH_125_Bass_Loop_F_01.wav"],
+    [
+      TrackName.BASS_F_02,
+      "/audio/bass-loops/FL_FUR_Kit2_Bass_Loop_Synths_Drop_125_F.wav",
+    ],
+    [TrackName.BASS_G_01, "/audio/bass-loops/SH_TCH_125_Bass_Loop_G_01.wav"],
+    [TrackName.BASS_G_02, "/audio/bass-loops/SH_TCH_125_Bass_Loop_G_02.wav"],
+    [
+      TrackName.BASS_G_SHARP_01,
+      "/audio/bass-loops/SH_TCH_125_Bass_Loop_G_SHARP_01.wav",
+    ],
+    [
+      TrackName.BASS_G_SHARP_02,
+      "/audio/bass-loops/SH_TCH_125_Bass_Loop_G_SHARP_02.wav",
+    ],
   ]);
 
   getPlayer(name: string) {
