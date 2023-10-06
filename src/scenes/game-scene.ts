@@ -50,7 +50,7 @@ export class GameScene extends Phaser.Scene {
     beater.setVelocity(velocity.x, velocity.y);
 
     // Beaters collide with each other
-    this.physics.add.collider(beater, this.beaters, this.beaterHitBeater);
+    this.physics.add.collider(beater, this.beaters); // add this.beaterHitBeater as 3rd param if needed later
 
     beater.setData("name", beaterNames[randomBallFrame]);
 
