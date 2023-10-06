@@ -132,9 +132,18 @@ function normaliseCanvasPosition(
   x: number,
   y: number
 ): { x: number; y: number } {
-  // Should be given event.client values, assumes canvas is size of window
+  let width = window.innerWidth;
+  let height = window.innerHeight;
+
+  // Get size of canvas
+  const canvasMount = document.getElementById("game-mount");
+  if (canvasMount) {
+    width = canvasMount.clientWidth;
+    height = canvasMount.clientHeight;
+  }
+
   return {
-    x: (x / window.innerWidth) * 2 - 1,
-    y: -(y / window.innerHeight) * 2 + 1,
+    x: (x / width) * 2 - 1,
+    y: -(y / height) * 2 + 1,
   };
 }
