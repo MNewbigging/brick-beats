@@ -29,7 +29,8 @@ export class AppState {
 
   @action startGame = async () => {
     // Setup listeners
-    eventListener.on("audio-scheduled-on", this.onAudioScheduled);
+    eventListener.on("audio-scheduled-on", this.onAudioScheduledOn);
+    eventListener.on("audio-stopped", this.onAudioStopped);
 
     // Must start tone from a user interaction
     await Tone.start();
@@ -87,15 +88,11 @@ export class AppState {
     }
   };
 
-  @action private onAudioScheduled = (brickName: BrickName) => {
+  @action private onAudioScheduledOn = (brickName: BrickName) => {
     this.nowPlaying.push(brickName);
   };
 
-  @action private onAudioStarted = () => {
-    //
-  };
-
-  @action private onAudioEnded = () => {
-    //
+  @action private onAudioStopped = (brickName: BrickName) => {
+    this.nowPlaying = this.nowPlaying.filter((bn) => bn !== brickName);
   };
 }

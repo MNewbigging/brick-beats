@@ -118,6 +118,8 @@ export class AudioManager {
     track.player.onstop = () => {
       // Remove track from map
       this.currentTracks.delete(brickName);
+      // Fire event
+      eventListener.fire("audio-stopped", brickName);
     };
   }
 
