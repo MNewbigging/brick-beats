@@ -1,12 +1,14 @@
-import { BrickName } from "../../types/brick-name";
+import { BeaterBrickCollision } from "../../events/event-map";
 import "./brick.scss";
 
 import React from "react";
 
 interface BrickProps {
-  brickName: BrickName;
+  data: BeaterBrickCollision;
 }
 
-export const Brick: React.FC<BrickProps> = ({ brickName }) => {
+export const Brick: React.FC<BrickProps> = ({ data }) => {
+  const { brickName } = data;
+
   return <div className={"brick " + brickName}></div>;
 };

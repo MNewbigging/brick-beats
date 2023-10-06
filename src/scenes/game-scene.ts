@@ -86,7 +86,7 @@ export class GameScene extends Phaser.Scene {
     const beaterName = beater.getData("name") as BeaterName;
     const brickName = shape.getData("name") as BrickName;
     const speed = beater.body.velocity.length();
-    const position = normaliseCanvasPosition(
+    const position = getAbsolutePosition(
       beater.body.position.x,
       beater.body.position.y
     );
@@ -156,4 +156,10 @@ function normaliseCanvasPosition(
     x: (x / width) * 2 - 1,
     y: -(y / height) * 2 + 1,
   };
+}
+
+function getAbsolutePosition(x: number, y: number): { x: number; y: number } {
+  console.log(`position: (${x}, ${y})`);
+
+  return { x, y };
 }

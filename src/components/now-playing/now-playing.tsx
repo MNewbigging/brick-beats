@@ -14,8 +14,11 @@ export const NowPlaying: React.FC<NowPlayingProps> = observer(
       <div className="now-playing">
         <div className="header">Now Playing</div>
         <div className="bricks-area">
-          {appState.nowPlaying.map((brickName) => (
-            <Brick brickName={brickName} />
+          {appState.nowPlaying.map((collisionData, idx) => (
+            <Brick
+              key={collisionData.brickName + idx.toString()}
+              data={collisionData}
+            />
           ))}
         </div>
       </div>

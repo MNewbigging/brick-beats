@@ -42,7 +42,7 @@ export class AudioManager {
 
     // If there is no such item, can add a new track for this brick
     if (!track) {
-      this.addTrack(event.brickName);
+      this.addTrack(event);
 
       return;
     }
@@ -53,9 +53,9 @@ export class AudioManager {
     }
   };
 
-  private addTrack(brickName: BrickName) {
+  private addTrack(event: BeaterBrickCollision) {
     // Get the track type for this brick
-    const trackType = getBrickTrackType(brickName);
+    const trackType = getBrickTrackType(event.brickName);
 
     // Then get a track name for this track type
     const trackName = getRandomTrack(trackType);
@@ -67,21 +67,21 @@ export class AudioManager {
     }
 
     // Start it
-    this.startAudio(brickName, trackType, player);
+    this.startAudio(event, trackType, player);
   }
 
   private startAudio(
-    brickName: BrickName,
+    event: BeaterBrickCollision,
     trackType: TrackType,
     player: Tone.Player
   ) {
     // This audio track is now scheduled
-    eventListener.fire("audio-scheduled-on", brickName);
+    eventListener.fire("audio-scheduled-on", event);
 
     // When it starts, do this once
     Tone.Transport.scheduleOnce(() => {
       // This player has now started
-      const track = this.currentTracks.get(brickName);
+      const track = this.currentTracks.get(event.brickName);
       if (track) {
         track.started = true;
       }
@@ -98,7 +98,7 @@ export class AudioManager {
     );
 
     // Add it to the map to be stopped later
-    this.currentTracks.set(brickName, {
+    this.currentTracks.set(event.brickName, {
       type: trackType,
       started: false,
       toBeRemoved: false,

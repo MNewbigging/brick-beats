@@ -8,11 +8,12 @@ import { BootScene } from "./scenes/boot-scene";
 import { GameScene } from "./scenes/game-scene";
 import { eventListener } from "./events/event-listener";
 import { BrickName } from "./types/brick-name";
+import { BeaterBrickCollision } from "./events/event-map";
 
 export class AppState {
   @observable loading = true;
   @observable gameStarted = false;
-  @observable nowPlaying: BrickName[] = [];
+  @observable nowPlaying: BeaterBrickCollision[] = [];
 
   private game?: Phaser.Game;
   private gameLoaded = false;
@@ -88,11 +89,13 @@ export class AppState {
     }
   };
 
-  @action private onAudioScheduledOn = (brickName: BrickName) => {
-    this.nowPlaying.push(brickName);
+  @action private onAudioScheduledOn = (props: BeaterBrickCollision) => {
+    this.nowPlaying.push(props);
   };
 
   @action private onAudioStopped = (brickName: BrickName) => {
-    this.nowPlaying = this.nowPlaying.filter((bn) => bn !== brickName);
+    this.nowPlaying = this.nowPlaying.filter(
+      (bn) => bn.brickName !== brickName
+    );
   };
 }
