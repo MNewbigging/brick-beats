@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 
 import { AppState } from "./app-state";
 import { IntroDialog } from "./intro-dialog/intro-dialog";
+import { NowPlaying } from "./now-playing/now-playing";
 
 interface AppProps {
   appState: AppState;
@@ -16,7 +17,9 @@ export const App: React.FC<AppProps> = observer(({ appState }) => {
       {/* The canvas is injected here */}
       <div id="game-mount"></div>
 
-      <div className="sidebar"></div>
+      <div className="sidebar">
+        <NowPlaying appState={appState} />
+      </div>
 
       {/* Intro dialog shows at start */}
       <IntroDialog appState={appState} />

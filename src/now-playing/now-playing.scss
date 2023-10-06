@@ -1,0 +1,21 @@
+.now-playing {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  .header {
+    font-weight: bold;
+    font-size: 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bricks-area {
+    display: flex;
+    flex-direction: column;
+  }
+}

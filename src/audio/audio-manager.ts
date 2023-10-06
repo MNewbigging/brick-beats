@@ -75,6 +75,9 @@ export class AudioManager {
     trackType: TrackType,
     player: Tone.Player
   ) {
+    // This audio track is now scheduled
+    eventListener.fire("audio-scheduled-on", brickName);
+
     // When it starts, do this once
     Tone.Transport.scheduleOnce(() => {
       // This player has now started

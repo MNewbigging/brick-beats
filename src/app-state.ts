@@ -7,10 +7,12 @@ import { AudioManager } from "./audio/audio-manager";
 import { BootScene } from "./scenes/boot-scene";
 import { GameScene } from "./scenes/game-scene";
 import { eventListener } from "./events/event-listener";
+import { BrickName } from "./types/brick-name";
 
 export class AppState {
   @observable loading = true;
   @observable gameStarted = false;
+  @observable nowPlaying: BrickName[] = [];
 
   private game?: Phaser.Game;
   private gameLoaded = false;
@@ -26,6 +28,9 @@ export class AppState {
   }
 
   @action startGame = async () => {
+    // Setup listeners
+    eventListener.on("audio-scheduled-on", this.onAudioScheduled);
+
     // Must start tone from a user interaction
     await Tone.start();
 
@@ -80,5 +85,17 @@ export class AppState {
     if (this.gameLoaded) {
       this.loading = false;
     }
+  };
+
+  @action private onAudioScheduled = (brickName: BrickName) => {
+    this.nowPlaying.push(brickName);
+  };
+
+  @action private onAudioStarted = () => {
+    //
+  };
+
+  @action private onAudioEnded = () => {
+    //
   };
 }
