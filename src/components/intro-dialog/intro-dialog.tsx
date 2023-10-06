@@ -4,7 +4,7 @@ import React from "react";
 import { Button, Dialog, DialogBody } from "@blueprintjs/core";
 import { observer } from "mobx-react-lite";
 
-import { AppState } from "../app-state";
+import { AppState } from "../../app-state";
 
 interface IntroDialogProps {
   appState: AppState;

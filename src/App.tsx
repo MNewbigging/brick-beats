@@ -4,8 +4,8 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 
 import { AppState } from "./app-state";
-import { IntroDialog } from "./intro-dialog/intro-dialog";
-import { NowPlaying } from "./now-playing/now-playing";
+import { IntroDialog } from "./components/intro-dialog/intro-dialog";
+import { NowPlaying } from "./components/now-playing/now-playing";
 
 interface AppProps {
   appState: AppState;
